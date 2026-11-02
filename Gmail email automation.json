@@ -1,0 +1,147 @@
+{
+  "name": "Gmail email automation",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "fd23ecc1-c672-4a57-9475-675e492007f7",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "your google sheet URL",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Sheet1",
+          "mode": "name"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        224,
+        0
+      ],
+      "id": "33115729-e6e6-455f-91ec-223e745a372b",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "redacted",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f87e7f51-cc7c-41de-af01-492954b30a5f",
+              "name": "=emailSubject",
+              "value": "=Course Status Update - {{$json.Name}}",
+              "type": "string"
+            },
+            {
+              "id": "4c22b9c2-6526-4b4d-94dd-202fd661dec6",
+              "name": "=emailBody",
+              "value": "=Hi {{$json.Name}},  Here is your course progress update:  Name: {{$json.Name}} Course: {{$json.Course}} Status: {{$json.Status}}  Regards, SocialEagle Automation",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        448,
+        0
+      ],
+      "id": "5c22ac72-27cc-4a39-add2-fe3d7641461a",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "sendTo": "mygmail@gmail.com",
+        "subject": "={{$json.emailSubject}}",
+        "emailType": "text",
+        "message": "={{$json.emailBody}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        672,
+        0
+      ],
+      "id": "44a06c16-acb9-4d4f-acbe-468fcbe089a2",
+      "name": "Send a message",
+      "webhookId": "redacted",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "redacted",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "2deca469-d2bd-4213-9e2b-b96791c9bb27",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "redacted"
+  },
+  "nodeGroups": [],
+  "id": "IWg0SBrRbbp5VqDv",
+  "tags": []
+}
